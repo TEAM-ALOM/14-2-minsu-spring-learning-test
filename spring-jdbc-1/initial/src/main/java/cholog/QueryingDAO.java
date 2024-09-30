@@ -4,6 +4,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 @Repository
@@ -14,7 +16,6 @@ public class QueryingDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /*
     private final RowMapper<Customer> actorRowMapper = (resultSet, rowNum) -> {
         Customer customer = new Customer(
                 resultSet.getLong("id"),
@@ -23,23 +24,24 @@ public class QueryingDAO {
         );
         return customer;
     };
-    추후 rowMapper에 대해 학습해보고 이용해보기
-    */
+    // 추후 rowMapper에 대해 학습해보고 이용해보기
+
 
     /**
      * public <T> T queryForObject(String sql, Class<T> requiredType)
      */
     public int count() {
         //TODO : customers 디비에 포함되어있는 row가 몇개인지 확인하는 기능 구현
-        return 0;
+        Integer count = jdbcTemplate.queryForObject("select count(*) from customers", Integer.class);
+        return count;
     }
 
     /**
      * public <T> T queryForObject(String sql, Class<T> requiredType, @Nullable Object... args)
      */
     public String getLastName(Long id) {
-        //TODO : 주어진 Id에 해당하는 customers의 lastName을 반환
-        return null;
+        String lastName = jdbcTemplate.queryForObject("select last_name from customers where id = ?", String.class, id);
+        return lastName;
     }
 
     /**
@@ -47,17 +49,25 @@ public class QueryingDAO {
      */
     public Customer findCustomerById(Long id) {
         String sql = "select id, first_name, last_name from customers where id = ?";
-        //TODO : 주어진 Id에 해당하는 customer를 객체로 반환
-        return null;
+        return jdbcTemplate.queryForObject(
+                sql, actorRowMapper, id);
     }
 
     /**
      * public <T> List<T> query(String sql, RowMapper<T> rowMapper)
      */
-    public List<Customer> findAllCustomers() {
+    public List<Customer> findAllCustomers() { // 뭐가 뭔지 모르겠지만 readMe파일 참고하면서 일단 .. 썸바리헬프미
         String sql = "select id, first_name, last_name from customers";
-        //TODO : 저장된 모든 Customers를 list형태로 반환
-        return null;
+
+        final RowMapper<Customer> rowMapper = (rs, rowNum) -> {
+            Customer customer = new Customer(
+                    rs.getLong("id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"));
+            return customer;
+        };
+
+        return jdbcTemplate.query(sql,actorRowMapper);
     }
 
     /**
@@ -66,6 +76,8 @@ public class QueryingDAO {
     public List<Customer> findCustomerByFirstName(String firstName) {
         String sql = "select id, first_name, last_name from customers where first_name = ?";
         //TODO : firstName을 기준으로 customer를 list형태로 반환
-        return null;
+        //readme에 없지만 일단
+         return jdbcTemplate.query(sql,actorRowMapper,firstName);
+
     }
 }

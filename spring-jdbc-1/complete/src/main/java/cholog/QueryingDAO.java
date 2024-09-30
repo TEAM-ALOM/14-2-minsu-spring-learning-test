@@ -77,6 +77,7 @@ public class QueryingDAO {
      * public <T> List<T> query(String sql, RowMapper<T> rowMapper, @Nullable Object... args)
      */
     public List<Customer> findCustomerByFirstName(String firstName) {
+
         String sql = "select id, first_name, last_name from customers where first_name = ?";
         return jdbcTemplate.query(sql, actorRowMapper, firstName);
     }
