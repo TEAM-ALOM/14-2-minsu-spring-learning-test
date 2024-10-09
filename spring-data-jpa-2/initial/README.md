@@ -78,10 +78,10 @@ class Publisher {
     @Id @GeneratedValue
     Long id;
     
-    @OneToMany(mappedBy="Ppublisher")
+    @OneToMany(mappedBy="Publisher")
     Set<Book> books;
     
-    // ...
+    // ...  
 }
 ```
 
